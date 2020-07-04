@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import { getBoats } from "../services/boatService";
 
-// const Itinerary = () => {
-//   return <h1>Itinerary</h1>;
-// };
-
 class Itinerary extends Component {
   state = {
     boats: [],

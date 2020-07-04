@@ -2,7 +2,6 @@ import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
 import { getSailor, saveSailor } from "../services/sailorService";
-// import { getGenres } from "../services/genreService";
 
 class SailorForm extends Form {
   state = {
@@ -12,7 +11,6 @@ class SailorForm extends Form {
       email: "",
       certifiedUntil: ""
     },
-    genres: [],
     errors: {},
   };
 
@@ -23,11 +21,6 @@ class SailorForm extends Form {
     email: Joi.string().required().label("Build Number"),
     certifiedUntil: Joi.date().required().label("LOA")
   };
-
-  async populateGenres() {
-    // const { data: genres } = await getGenres();
-    // this.setState({ genres });
-  }
 
   async populateSailor() {
     try {
@@ -44,7 +37,6 @@ class SailorForm extends Form {
   }
 
   async componentDidMount() {
-    // await this.populateGenres();
     await this.populateSailor();
   }
 

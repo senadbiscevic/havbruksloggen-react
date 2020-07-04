@@ -3,7 +3,6 @@ import Joi from "joi-browser";
 import moment from "moment";
 import Input from "./input";
 import Select from "./select";
-import CrewTable from './../crewTable';
 
 class Form extends Component {
   state = {
@@ -116,36 +115,6 @@ class Form extends Component {
         onChange={this.handleChange}
         error={errors[name]}
       />
-    );
-  }
-
-  renderArrayInput(name, label, type = "date") {
-    const { data } = this.state;
-    console.log(data[name])
-
-    return (
-      // <Input
-      //   type={type}
-      //   name={name}
-      //   value={moment(data[name]).format("YYYY-MM-DD")}
-      //   label={label}
-      //   onChange={this.handleChange}
-      //   error={errors[name]}
-      // />
-      <div>
-        {data[name].map((crew) => {
-          return(
-          <CrewTable 
-          crew={crew}
-          sortColumn="role"
-          onLike={this.handleLike}
-          onDelete={this.handleDelete}
-          onSort={this.handleSort}
-          />
-          // <span>{crew.crewId}</span>
-          )
-        })}
-      </div>
     );
   }
 }

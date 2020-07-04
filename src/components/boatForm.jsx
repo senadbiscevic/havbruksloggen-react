@@ -33,11 +33,6 @@ class BoatForm extends Form {
     boatCrewCollection: Joi.any(),
   };
 
-  async populateGenres() {
-    // const { data: genres } = await getGenres();
-    // this.setState({ genres });
-  }
-
   async populateBoat() {
     try {
       const boatId = this.props.match.params.id;
@@ -53,7 +48,6 @@ class BoatForm extends Form {
   }
 
   async componentDidMount() {
-    // await this.populateGenres();
     await this.populateBoat();
 
     const { data: sailors } = await getSailors();

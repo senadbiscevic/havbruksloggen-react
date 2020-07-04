@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import SailorsTable from "./sailorsTable";
-// import ListGroup from "./common/listGroup";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import { getSailors, deleteSailor } from "../services/sailorService";
@@ -11,11 +10,10 @@ import _ from "lodash";
 class Sailors extends Component {
   state = {
     sailors: [],
-    genres: [],
     currentPage: 1,
     pageSize: 10,
     searchQuery: "",
-    selectedGenre: null,
+    selectedSailor: null,
     sortColumn: { path: "title", order: "asc" }
   };
 
@@ -43,12 +41,12 @@ class Sailors extends Component {
     this.setState({ currentPage: page });
   };
 
-  handleGenreSelect = genre => {
-    this.setState({ selectedGenre: genre, currentPage: 1 });
+  handleSailorSelect = sailor => {
+    this.setState({ selectedSailor: sailor, currentPage: 1 });
   };
 
   handleSearch = query => {
-    this.setState({ searchQuery: query, selectedGenre: null, currentPage: 1 });
+    this.setState({ searchQuery: query, selectedSailor: null, currentPage: 1 });
   };
 
   handleSort = sortColumn => {
@@ -60,7 +58,6 @@ class Sailors extends Component {
       pageSize,
       currentPage,
       sortColumn,
-      // selectedGenre,
       searchQuery,
       sailors: allSailors
     } = this.state;
@@ -70,8 +67,6 @@ class Sailors extends Component {
       filtered = allSailors.filter(m =>
         m.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
-    // else if (selectedGenre && selectedGenre._id)
-    //   filtered = allSailors.filter(m => m.genre._id === selectedGenre._id);
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
