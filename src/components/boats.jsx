@@ -2,39 +2,26 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import BoatsTable from "./boatsTable";
 import Pagination from "./common/pagination";
+import { connect } from "react-redux";
+import * as actions from "../store/actions/index";
 import { paginate } from "../utils/paginate";
-import { getBoats, deleteBoat } from "../services/boatService";
 import SearchBox from "./searchBox";
 import _ from "lodash";
 
 class Boats extends Component {
   state = {
-    boats: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 8,
     searchQuery: "",
-    selectedBoat: null,
     sortColumn: { path: "title", order: "asc" },
   };
 
   async componentDidMount() {
-    const { data: boats } = await getBoats();
-    this.setState({ boats: boats.model });
+    this.props.onFetchBoats();
   }
 
   handleDelete = (boat) => {
-    const boats = this.state.boats.filter((m) => m.boatId !== boat.boatId);
-    this.setState({ boats });
-
-    deleteBoat(boat.boatId);
-  };
-
-  handleLike = (boat) => {
-    const boats = [...this.state.boats];
-    const index = boats.indexOf(boat);
-    boats[index] = { ...boats[index] };
-    boats[index].liked = !boats[index].liked;
-    this.setState({ boats });
+    this.props.onRemoveBoat(boat.boatId);
   };
 
   handlePageChange = (page) => {
@@ -50,13 +37,9 @@ class Boats extends Component {
   };
 
   getPagedData = () => {
-    const {
-      pageSize,
-      currentPage,
-      sortColumn,
-      searchQuery,
-      boats: allBoats,
-    } = this.state;
+    const { boats: allBoats } = this.props;
+
+    const { currentPage, pageSize, searchQuery, sortColumn } = this.state;
 
     let filtered = allBoats;
     if (searchQuery)
@@ -72,7 +55,7 @@ class Boats extends Component {
   };
 
   render() {
-    const { length: count } = this.state.boats;
+    const { length: count } = this.props.boats;
     const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
 
     if (count === 0) return <p>There are no boats in the database.</p>;
@@ -112,4 +95,22 @@ class Boats extends Component {
   }
 }
 
-export default Boats;
+const mapStateToProps = (state) => {
+  return {
+    boats: state.boatReducer.boats,
+    currentPage: state.boatReducer.currentPage,
+    pageSize: state.boatReducer.pageSize,
+    searchQuery: state.boatReducer.searchQuery,
+    selectedBoat: state.boatReducer.selectedBoat,
+    sortColumn: state.boatReducer.sortColumn,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onFetchBoats: () => dispatch(actions.fetchBoats()),
+    onRemoveBoat: (boatId) => dispatch(actions.removeBoat(boatId)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Boats);

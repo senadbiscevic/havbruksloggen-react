@@ -2,39 +2,26 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import SailorsTable from "./sailorsTable";
 import Pagination from "./common/pagination";
+import { connect } from "react-redux";
+import * as actions from "../store/actions/index";
 import { paginate } from "../utils/paginate";
-import { getSailors, deleteSailor } from "../services/sailorService";
 import SearchBox from "./searchBox";
 import _ from "lodash";
 
 class Sailors extends Component {
   state = {
-    sailors: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 8,
     searchQuery: "",
-    selectedSailor: null,
     sortColumn: { path: "title", order: "asc" }
-  };
+  }
 
   async componentDidMount() {
-    const { data: sailors } = await getSailors();
-    this.setState({ sailors: sailors.model });
+    this.props.onFetchSailors();
   }
 
   handleDelete = sailor => {
-    const sailors = this.state.sailors.filter(m => m.sailorId !== sailor.sailorId);
-    this.setState({ sailors });
-
-    deleteSailor(sailor.sailorId);
-  };
-
-  handleLike = sailor => {
-    const sailors = [...this.state.sailors];
-    const index = sailors.indexOf(sailor);
-    sailors[index] = { ...sailors[index] };
-    sailors[index].liked = !sailors[index].liked;
-    this.setState({ sailors });
+    this.props.onRemoveSailor(sailor.sailorId);
   };
 
   handlePageChange = page => {
@@ -55,12 +42,10 @@ class Sailors extends Component {
 
   getPagedData = () => {
     const {
-      pageSize,
-      currentPage,
-      sortColumn,
-      searchQuery,
       sailors: allSailors
-    } = this.state;
+    } = this.props;
+
+    const { currentPage, pageSize, searchQuery, sortColumn } = this.state;
 
     let filtered = allSailors;
     if (searchQuery)
@@ -76,7 +61,7 @@ class Sailors extends Component {
   };
 
   render() {
-    const { length: count } = this.state.sailors;
+    const { length: count } = this.props.sailors;
     const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
 
     if (count === 0) return <p>There are no sailors in the database.</p>;
@@ -115,4 +100,22 @@ class Sailors extends Component {
   }
 }
 
-export default Sailors;
+const mapStateToProps = (state) => {
+  return {
+    sailors: state.sailorReducer.sailors,
+    currentPage: state.sailorReducer.currentPage,
+    pageSize: state.sailorReducer.pageSize,
+    searchQuery: state.sailorReducer.searchQuery,
+    selectedSailor: state.sailorReducer.selectedSailor,
+    sortColumn: state.sailorReducer.sortColumn
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onFetchSailors: () => dispatch(actions.fetchSailors()),
+    onRemoveSailor: (sailorId) => dispatch(actions.removeSailor(sailorId))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sailors);
